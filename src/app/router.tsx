@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import Layout from "../shared/components/layout/Layout";
+import LoginPage from "../features/auth/views/LoginPage";
 import Dashboard from "../features/dashboard/views/Dashboard";
 import MarketControl from "../features/market/views/MarketControl";
 import PlatformManagement from "../features/platforms/views/PlatformManagement";
@@ -10,6 +11,10 @@ import OptionsManagement from "../features/options/views/OptionsManagement";
 import FeeConfiguration from "../features/fees/views/FeeConfiguration";
 
 export const router = createBrowserRouter([
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
   {
     path: "/",
     element: <Layout />,
