@@ -15,8 +15,8 @@ const navItems = [
   { label: "Market Control", to: "/market", icon: Activity },
   { label: "Platform Management", to: "/platforms", icon: Building2 },
   { label: "Instrument Management", to: "/instruments", icon: Layers },
-  { label: "Data Seed", to: "/seed", icon: Database },
   { label: "Event Management", to: "/events", icon: Zap },
+  { label: "Data Seed", to: "/seed", icon: Database },
   { label: "Fee Configuration", to: "/fees", icon: Settings },
 ];
 
