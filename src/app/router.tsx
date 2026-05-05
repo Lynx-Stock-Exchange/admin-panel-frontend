@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Layout from "../shared/components/layout/Layout";
 import LoginPage from "../features/auth/views/LoginPage";
 import Dashboard from "../features/dashboard/views/Dashboard";
-import MarketControl from "../features/market/views/MarketControl";
+import MarketControlPage from "../features/market/views/MarketControlPage";
 import PlatformManagement from "../features/platforms/views/PlatformManagement";
 import StockManagement from "../features/stocks/views/StockManagement";
 import DataSeed from "../features/seed/views/DataSeed";
@@ -20,7 +20,7 @@ export const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <Dashboard /> },
-      { path: "market", element: <MarketControl /> },
+      { path: "market", element: <MarketControlPage /> },
       { path: "platforms", element: <PlatformManagement /> },
       { path: "stocks", element: <StockManagement /> },
       { path: "seed", element: <DataSeed /> },
