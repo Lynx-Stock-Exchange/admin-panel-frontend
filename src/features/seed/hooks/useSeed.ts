@@ -36,7 +36,7 @@ export function useSeed() {
       setResult(data);
     } catch (err: unknown) {
       const msg =
-        (err as { response?: { data?: { error?: string } } })?.response?.data?.error ??
+        (err as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error?.message ??
         "Seed failed. Check the payload and try again.";
       setError(msg);
     } finally {
