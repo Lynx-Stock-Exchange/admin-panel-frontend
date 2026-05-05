@@ -5,7 +5,7 @@ import Dashboard from "../features/dashboard/views/Dashboard";
 import MarketControlPage from "../features/market/views/MarketControlPage";
 import PlatformManagement from "../features/platforms/views/PlatformManagement";
 import InstrumentManagementPage from "../features/instruments/views/InstrumentManagementPage";
-import DataSeed from "../features/seed/views/DataSeed";
+import DataSeedPage from "../features/seed/views/DataSeedPage";
 import EventManagementPage from "../features/events/views/EventManagementPage";
 import FeeConfigurationPage from "../features/fees/views/FeeConfigurationPage";
 
@@ -22,7 +22,7 @@ export const router = createBrowserRouter([
       { path: "market", element: <MarketControlPage /> },
       { path: "platforms", element: <PlatformManagement /> },
       { path: "instruments", element: <InstrumentManagementPage /> },
-      { path: "seed", element: <DataSeed /> },
+      { path: "seed", element: <DataSeedPage /> },
       { path: "events", element: <EventManagementPage /> },
       { path: "fees", element: <FeeConfigurationPage /> },
     ],
