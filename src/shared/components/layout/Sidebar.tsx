@@ -3,10 +3,9 @@ import {
   LayoutDashboard,
   Activity,
   Building2,
-  BarChart2,
+  Layers,
   Database,
   Zap,
-  FileText,
   Settings,
 } from "lucide-react";
 import { EXCHANGE_NAME } from "../../constants/config";
@@ -15,10 +14,9 @@ const navItems = [
   { label: "Dashboard", to: "/", icon: LayoutDashboard },
   { label: "Market Control", to: "/market", icon: Activity },
   { label: "Platform Management", to: "/platforms", icon: Building2 },
-  { label: "Stock Management", to: "/stocks", icon: BarChart2 },
+  { label: "Instrument Management", to: "/instruments", icon: Layers },
   { label: "Data Seed", to: "/seed", icon: Database },
   { label: "Event Management", to: "/events", icon: Zap },
-  { label: "Options Management", to: "/options", icon: FileText },
   { label: "Fee Configuration", to: "/fees", icon: Settings },
 ];
 

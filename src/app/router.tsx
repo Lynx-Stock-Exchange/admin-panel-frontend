@@ -4,10 +4,9 @@ import LoginPage from "../features/auth/views/LoginPage";
 import Dashboard from "../features/dashboard/views/Dashboard";
 import MarketControlPage from "../features/market/views/MarketControlPage";
 import PlatformManagement from "../features/platforms/views/PlatformManagement";
-import StockManagement from "../features/stocks/views/StockManagement";
+import InstrumentManagementPage from "../features/instruments/views/InstrumentManagementPage";
 import DataSeed from "../features/seed/views/DataSeed";
 import EventManagement from "../features/events/views/EventManagement";
-import OptionsManagement from "../features/options/views/OptionsManagement";
 import FeeConfiguration from "../features/fees/views/FeeConfiguration";
 
 export const router = createBrowserRouter([
@@ -22,10 +21,9 @@ export const router = createBrowserRouter([
       { index: true, element: <Dashboard /> },
       { path: "market", element: <MarketControlPage /> },
       { path: "platforms", element: <PlatformManagement /> },
-      { path: "stocks", element: <StockManagement /> },
+      { path: "instruments", element: <InstrumentManagementPage /> },
       { path: "seed", element: <DataSeed /> },
       { path: "events", element: <EventManagement /> },
-      { path: "options", element: <OptionsManagement /> },
       { path: "fees", element: <FeeConfiguration /> },
     ],
   },
