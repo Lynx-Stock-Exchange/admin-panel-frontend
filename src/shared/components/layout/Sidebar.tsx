@@ -6,7 +6,7 @@ import {
   Layers,
   Database,
   Zap,
-  Settings,
+  DollarSign,
 } from "lucide-react";
 import { EXCHANGE_NAME } from "../../constants/config";
 
@@ -16,8 +16,8 @@ const navItems = [
   { label: "Platform Management", to: "/platforms", icon: Building2 },
   { label: "Instrument Management", to: "/instruments", icon: Layers },
   { label: "Event Management", to: "/events", icon: Zap },
+  { label: "Fee Configuration", to: "/fees", icon: DollarSign },
   { label: "Data Seed", to: "/seed", icon: Database },
-  { label: "Fee Configuration", to: "/fees", icon: Settings },
 ];
 
 export default function Sidebar() {

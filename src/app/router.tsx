@@ -7,7 +7,7 @@ import PlatformManagement from "../features/platforms/views/PlatformManagement";
 import InstrumentManagementPage from "../features/instruments/views/InstrumentManagementPage";
 import DataSeed from "../features/seed/views/DataSeed";
 import EventManagementPage from "../features/events/views/EventManagementPage";
-import FeeConfiguration from "../features/fees/views/FeeConfiguration";
+import FeeConfigurationPage from "../features/fees/views/FeeConfigurationPage";
 
 export const router = createBrowserRouter([
   {
@@ -24,7 +24,7 @@ export const router = createBrowserRouter([
       { path: "instruments", element: <InstrumentManagementPage /> },
       { path: "seed", element: <DataSeed /> },
       { path: "events", element: <EventManagementPage /> },
-      { path: "fees", element: <FeeConfiguration /> },
+      { path: "fees", element: <FeeConfigurationPage /> },
     ],
   },
 ]);
