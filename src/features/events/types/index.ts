@@ -29,6 +29,15 @@ export interface TriggeredEvent {
   triggered_by: "SYSTEM" | "ADMIN";
 }
 
+export interface CreateEventDefinitionPayload {
+  event_type: EventType;
+  scope: EventScope;
+  target: string | null;
+  magnitude: number;
+  duration_ticks: number;
+  headline: string;
+}
+
 export interface EventTriggerRequest {
   event_type: EventType;
   scope: EventScope;

@@ -12,6 +12,7 @@ type AuthContextValue = {
   user: AdminUser | null;
   isLoading: boolean;
   signIn: (username: string, password: string) => Promise<void>;
+  signUp: (username: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -32,13 +33,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(loggedUser);
   }
 
+  async function signUp(username: string, password: string) {
+    const newUser = await AuthManager.signUp({ username, password });
+    setUser(newUser);
+  }
+
   async function signOut() {
     await AuthManager.signOut();
     setUser(null);
   }
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, isLoading, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );

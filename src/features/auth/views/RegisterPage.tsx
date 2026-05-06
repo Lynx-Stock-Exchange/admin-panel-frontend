@@ -1,14 +1,13 @@
-
-
 import { useState, type FormEvent } from "react";
 import { Navigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { EXCHANGE_NAME } from "../../../shared/constants/config";
 
-export default function LoginPage() {
-  const { user, isLoading, signIn } = useAuth();
+export default function RegisterPage() {
+  const { user, isLoading, signUp } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -17,9 +16,15 @@ export default function LoginPage() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      await signIn(username, password);
+      await signUp(username, password);
     } catch (err: unknown) {
       setError((err as Error).message ?? "Something went wrong.");
     } finally {
@@ -34,7 +39,7 @@ export default function LoginPage() {
           <span className="text-white text-2xl font-semibold tracking-tight">
             {EXCHANGE_NAME}
           </span>
-          <p className="text-zinc-500 text-sm mt-1">Admin Panel</p>
+          <p className="text-zinc-500 text-sm mt-1">Create admin account</p>
         </div>
 
         <form
@@ -50,6 +55,7 @@ export default function LoginPage() {
               type="text"
               autoComplete="username"
               required
+              minLength={3}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full rounded-md bg-zinc-800 border border-zinc-700 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-500 transition"
@@ -63,10 +69,27 @@ export default function LoginPage() {
             <input
               id="password"
               type="password"
-              autoComplete="current-password"
+              autoComplete="new-password"
               required
+              minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="w-full rounded-md bg-zinc-800 border border-zinc-700 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-500 transition"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-zinc-400" htmlFor="confirm-password">
+              Confirm password
+            </label>
+            <input
+              id="confirm-password"
+              type="password"
+              autoComplete="new-password"
+              required
+              minLength={6}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full rounded-md bg-zinc-800 border border-zinc-700 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-zinc-500 transition"
             />
           </div>
@@ -82,13 +105,13 @@ export default function LoginPage() {
             disabled={isSubmitting}
             className="w-full rounded-md bg-white text-zinc-900 text-sm font-medium py-2 hover:bg-zinc-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
-            {isSubmitting ? "Signing in…" : "Sign in"}
+            {isSubmitting ? "Creating account…" : "Create account"}
           </button>
 
           <p className="text-center text-xs text-zinc-500">
-            Don't have an account?{" "}
-            <Link to="/register" className="text-zinc-300 hover:text-white transition-colors">
-              Register
+            Already have an account?{" "}
+            <Link to="/login" className="text-zinc-300 hover:text-white transition-colors">
+              Sign in
             </Link>
           </p>
         </form>
