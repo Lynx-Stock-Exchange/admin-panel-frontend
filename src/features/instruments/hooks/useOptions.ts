@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { OptionManager } from "../services/OptionManager";
-import type { OptionContract, CreateOptionPayload, UpdateOptionPayload } from "../types";
+import type { OptionContract, CreateOptionPayload } from "../types";
 
 export function useOptions() {
   const [options, setOptions] = useState<OptionContract[]>([]);
@@ -32,27 +32,5 @@ export function useOptions() {
     }
   }
 
-  async function updateOption(optionId: string, payload: UpdateOptionPayload): Promise<boolean> {
-    try {
-      const updated = await OptionManager.update(optionId, payload);
-      setOptions((prev) => prev.map((o) => (o.option_id === optionId ? updated : o)));
-      return true;
-    } catch {
-      setError("Failed to update option contract.");
-      return false;
-    }
-  }
-
-  async function deleteOption(optionId: string): Promise<boolean> {
-    try {
-      await OptionManager.remove(optionId);
-      setOptions((prev) => prev.filter((o) => o.option_id !== optionId));
-      return true;
-    } catch {
-      setError("Failed to delete option contract.");
-      return false;
-    }
-  }
-
-  return { options, loading, error, reload: load, createOption, updateOption, deleteOption };
+  return { options, loading, error, reload: load, createOption };
 }
