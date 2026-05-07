@@ -1,19 +1,36 @@
 import { useEffect, useState } from "react";
 import { EventManager } from "../services/EventManager";
-import type { TriggeredEvent } from "../types";
+import type { TriggeredEvent, EventTriggerRequest } from "../types";
 
 export function useEventHistory() {
   const [history, setHistory] = useState<TriggeredEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    EventManager.listHistory()
-      .then(setHistory)
-      .catch(() => {
-        // endpoint not yet available — silently show empty
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  async function load() {
+    setLoading(true);
+    setError(null);
+    try {
+      setHistory(await EventManager.listHistory());
+    } catch {
+      setHistory([]);
+    } finally {
+      setLoading(false);
+    }
+  }
 
-  return { history, loading };
+  useEffect(() => { load(); }, []);
+
+  async function triggerEvent(payload: EventTriggerRequest): Promise<boolean> {
+    try {
+      await EventManager.trigger(payload);
+      await load();
+      return true;
+    } catch {
+      setError("Failed to trigger event.");
+      return false;
+    }
+  }
+
+  return { history, loading, error, triggerEvent };
 }
