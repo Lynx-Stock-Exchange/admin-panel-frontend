@@ -20,7 +20,7 @@ export default function RevenueStatCard({ revenue, loading }: Props) {
               {revenue ? formatCurrency(revenue.total_revenue) : "—"}
             </p>
           )}
-          {!loading && revenue && (
+          {!loading && revenue && revenue.filled_order_count != null && (
             <p className="mt-1 text-xs text-zinc-400">
               from {revenue.filled_order_count.toLocaleString()} filled order{revenue.filled_order_count !== 1 ? "s" : ""}
             </p>
