@@ -2,18 +2,22 @@ import { apiClient } from "../../../shared/services/apiClient";
 
 export const DashboardRepository = {
   async getPlatformCount(): Promise<number> {
-    const { data } = await apiClient.get("/api/admin/platforms");
-    return (data.platforms as unknown[]).length;
+    const { data } = await apiClient.get("/api/admin/platforms/total");
+    return data.count as number;
   },
 
-  async getInstrumentCount(): Promise<number> {
+  async getInstrumentCounts(): Promise<{
+    stockCount: number;
+    optionCount: number;
+  }> {
     const [stocksRes, optionsRes] = await Promise.all([
-      apiClient.get("/api/admin/stocks"),
-      apiClient.get("/api/admin/options"),
+      apiClient.get("/api/admin/stocks/total"),
+      apiClient.get("/api/admin/options/total"),
     ]);
-    const stocks: unknown[] = stocksRes.data.stocks ?? stocksRes.data;
-    const options: unknown[] = optionsRes.data.options ?? optionsRes.data;
-    return stocks.length + options.length;
+    return {
+      stockCount: stocksRes.data.count as number,
+      optionCount: optionsRes.data.count as number,
+    };
   },
 
   async getTotalFeeRevenue(): Promise<number> {

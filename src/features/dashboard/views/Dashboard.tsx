@@ -28,7 +28,8 @@ export default function Dashboard() {
         />
         <StatCard
           label="Instruments"
-          value={stats?.instrumentCount ?? 0}
+          value={stats ? stats.stockCount + stats.optionCount : 0}
+          detail={stats ? `${stats.stockCount} stocks · ${stats.optionCount} options` : undefined}
           loading={loading}
           linkTo="/instruments"
           linkLabel="Manage instruments"

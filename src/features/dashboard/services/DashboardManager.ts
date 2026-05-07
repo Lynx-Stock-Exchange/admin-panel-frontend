@@ -3,11 +3,11 @@ import type { DashboardStats } from "../types";
 
 export const DashboardManager = {
   async getStats(): Promise<DashboardStats> {
-    const [platformCount, instrumentCount, totalFeeRevenue] = await Promise.all([
+    const [platformCount, { stockCount, optionCount }, totalFeeRevenue] = await Promise.all([
       DashboardRepository.getPlatformCount(),
-      DashboardRepository.getInstrumentCount(),
+      DashboardRepository.getInstrumentCounts(),
       DashboardRepository.getTotalFeeRevenue(),
     ]);
-    return { platformCount, instrumentCount, totalFeeRevenue };
+    return { platformCount, stockCount, optionCount, totalFeeRevenue };
   },
 };

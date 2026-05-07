@@ -1,5 +1,6 @@
 export interface DashboardStats {
   platformCount: number;
-  instrumentCount: number;
+  stockCount: number;
+  optionCount: number;
   totalFeeRevenue: number;
 }
