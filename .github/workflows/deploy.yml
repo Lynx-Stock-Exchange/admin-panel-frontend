@@ -35,7 +35,7 @@ jobs:
             cd ~/stock-exchange
 
             echo "Rebuilding only admin-panel-frontend..."
-            sudo docker compose up -d --build admin-panel-frontend
+            docker compose up -d --build admin-panel-frontend
 
             echo "Deployment status:"
-            sudo docker compose ps admin-panel-frontend
+            docker compose ps admin-panel-frontend
