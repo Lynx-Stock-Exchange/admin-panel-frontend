@@ -4,8 +4,7 @@ import type { Stock, CreateStockPayload, UpdateStockPayload } from "../types";
 export const StockRepository = {
   async list(): Promise<Stock[]> {
     const { data } = await apiClient.get("/api/admin/stocks");
-    const stocks = data.stocks ?? data;
-    return Array.isArray(stocks) ? stocks : [];
+    return data.stocks ?? data;
   },
 
   async create(payload: CreateStockPayload): Promise<Stock> {
@@ -14,7 +13,10 @@ export const StockRepository = {
   },
 
   async update(ticker: string, payload: UpdateStockPayload): Promise<Stock> {
-    const { data } = await apiClient.put(`/api/admin/stocks/${ticker}`, payload);
+    const { data } = await apiClient.put(
+      `/api/admin/stocks/${ticker}`,
+      payload,
+    );
     return data.stock ?? data;
   },
 

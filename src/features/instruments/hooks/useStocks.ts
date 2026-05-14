@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { StockManager } from "../services/StockManager";
-import type { Stock, CreateStockPayload, UpdateStockPayload } from "../types";
+import type { Stock, CreateStockPayload } from "../types";
 
 export function useStocks() {
   const [stocks, setStocks] = useState<Stock[]>([]);
@@ -19,7 +19,9 @@ export function useStocks() {
     }
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   async function createStock(payload: CreateStockPayload): Promise<boolean> {
     try {
@@ -32,27 +34,5 @@ export function useStocks() {
     }
   }
 
-  async function updateStock(ticker: string, payload: UpdateStockPayload): Promise<boolean> {
-    try {
-      const updated = await StockManager.update(ticker, payload);
-      setStocks((prev) => prev.map((s) => (s.ticker === ticker ? updated : s)));
-      return true;
-    } catch {
-      setError("Failed to update stock.");
-      return false;
-    }
-  }
-
-  async function deleteStock(ticker: string): Promise<boolean> {
-    try {
-      await StockManager.remove(ticker);
-      setStocks((prev) => prev.filter((s) => s.ticker !== ticker));
-      return true;
-    } catch {
-      setError("Failed to delete stock.");
-      return false;
-    }
-  }
-
-  return { stocks, loading, error, reload: load, createStock, updateStock, deleteStock };
+  return { stocks, loading, error, reload: load, createStock };
 }

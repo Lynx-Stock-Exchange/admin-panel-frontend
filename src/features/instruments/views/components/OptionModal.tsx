@@ -1,14 +1,11 @@
 import { useState } from "react";
 import { X } from "lucide-react";
-import type { OptionContract, CreateOptionPayload, UpdateOptionPayload } from "../../types";
-import { shortenId } from "../../utils/format";
+import type { CreateOptionPayload } from "../../types";
 
 interface Props {
-  mode: "add" | "edit";
-  option?: OptionContract;
+  mode: "add";
   onClose: () => void;
   onCreate: (payload: CreateOptionPayload) => Promise<void>;
-  onUpdate: (optionId: string, payload: UpdateOptionPayload) => Promise<void>;
 }
 
 type FormData = {
@@ -19,18 +16,18 @@ type FormData = {
   premium: string;
 };
 
-function initForm(option?: OptionContract): FormData {
+function initForm(): FormData {
   return {
-    underlying_ticker: option?.underlying_ticker ?? "",
-    option_type: option?.option_type ?? "CALL",
-    strike_price: option ? String(option.strike_price) : "",
-    expiry_time: option?.expiry_time ? option.expiry_time.slice(0, 16) : "",
-    premium: option ? String(option.premium) : "",
+    underlying_ticker: "",
+    option_type: "CALL",
+    strike_price: "",
+    expiry_time: "",
+    premium: "",
   };
 }
 
-export default function OptionModal({ mode, option, onClose, onCreate, onUpdate }: Props) {
-  const [form, setForm] = useState<FormData>(() => initForm(option));
+export default function OptionModal({ onClose, onCreate }: Props) {
+  const [form, setForm] = useState<FormData>(initForm);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,21 +40,13 @@ export default function OptionModal({ mode, option, onClose, onCreate, onUpdate 
     setError(null);
     setSubmitting(true);
     try {
-      if (mode === "add") {
-        await onCreate({
-          underlying_ticker: form.underlying_ticker.trim().toUpperCase(),
-          option_type: form.option_type,
-          strike_price: parseFloat(form.strike_price),
-          expiry_time: form.expiry_time,
-          initial_premium: parseFloat(form.premium),
-        });
-      } else {
-        await onUpdate(option!.option_id, {
-          strike_price: parseFloat(form.strike_price),
-          expiry_time: form.expiry_time,
-          premium: parseFloat(form.premium),
-        });
-      }
+      await onCreate({
+        underlying_ticker: form.underlying_ticker.trim().toUpperCase(),
+        option_type: form.option_type,
+        strike_price: parseFloat(form.strike_price),
+        expiry_time: form.expiry_time,
+        initial_premium: parseFloat(form.premium),
+      });
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
@@ -70,9 +59,12 @@ export default function OptionModal({ mode, option, onClose, onCreate, onUpdate 
       <div className="bg-white rounded-lg border border-zinc-200 shadow-lg w-full max-w-md mx-4">
         <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100">
           <h3 className="text-sm font-semibold text-zinc-900">
-            {mode === "add" ? "Add Option Contract" : `Edit ${shortenId(option!.option_id)}`}
+            Add Option Contract
           </h3>
-          <button onClick={onClose} className="text-zinc-400 hover:text-zinc-700 cursor-pointer">
+          <button
+            onClick={onClose}
+            className="text-zinc-400 hover:text-zinc-700 cursor-pointer"
+          >
             <X size={16} />
           </button>
         </div>
@@ -86,18 +78,18 @@ export default function OptionModal({ mode, option, onClose, onCreate, onUpdate 
                 maxLength={5}
                 placeholder="ARKA"
                 value={form.underlying_ticker}
-                disabled={mode === "edit"}
                 onChange={(e) => set("underlying_ticker", e.target.value)}
-                className={mode === "edit" ? inputDisabledCls : inputCls}
+                className={inputCls}
               />
             </Field>
 
             <Field label="Type" required>
               <select
                 value={form.option_type}
-                disabled={mode === "edit"}
-                onChange={(e) => set("option_type", e.target.value as "CALL" | "PUT")}
-                className={mode === "edit" ? inputDisabledCls : inputCls}
+                onChange={(e) =>
+                  set("option_type", e.target.value as "CALL" | "PUT")
+                }
+                className={inputCls}
               >
                 <option value="CALL">CALL</option>
                 <option value="PUT">PUT</option>
@@ -117,7 +109,7 @@ export default function OptionModal({ mode, option, onClose, onCreate, onUpdate 
               />
             </Field>
 
-            <Field label={mode === "add" ? "Initial Premium" : "Premium"} required>
+            <Field label="Initial Premium" required>
               <input
                 type="number"
                 required
@@ -131,7 +123,7 @@ export default function OptionModal({ mode, option, onClose, onCreate, onUpdate 
             </Field>
           </div>
 
-          <Field label="Expiry Time" required className="col-span-2">
+          <Field label="Expiry Time" required>
             <input
               type="datetime-local"
               required
@@ -157,7 +149,7 @@ export default function OptionModal({ mode, option, onClose, onCreate, onUpdate 
               disabled={submitting}
               className="px-4 py-2 text-sm font-medium rounded-md bg-zinc-900 text-white hover:bg-zinc-700 transition-colors cursor-pointer disabled:opacity-40"
             >
-              {submitting ? "Saving…" : mode === "add" ? "Add Contract" : "Save Changes"}
+              {submitting ? "Saving…" : "Add Contract"}
             </button>
           </div>
         </form>
@@ -168,9 +160,6 @@ export default function OptionModal({ mode, option, onClose, onCreate, onUpdate 
 
 const inputCls =
   "w-full rounded-md border border-zinc-200 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900";
-
-const inputDisabledCls =
-  "w-full rounded-md border border-zinc-100 bg-zinc-50 px-3 py-2 text-sm text-zinc-400 cursor-not-allowed";
 
 function Field({
   label,

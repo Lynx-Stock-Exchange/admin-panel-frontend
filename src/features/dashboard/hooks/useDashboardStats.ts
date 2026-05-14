@@ -21,7 +21,8 @@ export function useDashboardStats() {
         apiClient.get("/api/admin/fees/revenue"),
       ]);
 
-      const platforms: { is_active: boolean }[] = platformsRes.data.platforms ?? [];
+      const platforms: { is_active: boolean }[] =
+        platformsRes.data.platforms ?? [];
       const stocks: unknown[] = stocksRes.data.stocks ?? stocksRes.data ?? [];
       const revenue = revenueRes.data;
 
@@ -38,7 +39,9 @@ export function useDashboardStats() {
     }
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   return { stats, loading, reload: load };
 }

@@ -1,5 +1,5 @@
 import { useMarketControl } from "../hooks/useMarketControl";
-import MarketStatusCard from "./components/MarketStatusCard";
+import MarketStatusCard from "../../../shared/components/MarketStatusCard";
 import MarketStateCard from "./components/MarketStateCard";
 import SimulationSpeedCard from "./components/SimulationSpeedCard";
 
@@ -22,7 +22,11 @@ export default function MarketControlPage() {
 
   return (
     <div className="space-y-4">
-      <MarketStatusCard status={status} loading={loading} onRefresh={fetchStatus} />
+      <MarketStatusCard
+        status={status}
+        loading={loading}
+        onRefresh={fetchStatus}
+      />
       <MarketStateCard
         isOpen={status?.is_open}
         loading={actionLoading}
