@@ -4,7 +4,8 @@ import type { OptionContract, CreateOptionPayload, UpdateOptionPayload } from ".
 export const OptionRepository = {
   async list(): Promise<OptionContract[]> {
     const { data } = await apiClient.get("/api/admin/options");
-    return data.options ?? data;
+    const options = data.options ?? data;
+    return Array.isArray(options) ? options : [];
   },
 
   async create(payload: CreateOptionPayload): Promise<OptionContract> {
