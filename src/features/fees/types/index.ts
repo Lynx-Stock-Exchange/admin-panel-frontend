@@ -1,5 +1,5 @@
 export interface FeeConfig {
-  fee_rate: number;
+  rate: number;
 }
 
 export interface FeeOrder {
@@ -13,8 +13,8 @@ export interface FeeOrder {
 }
 
 export interface FeeRevenue {
-  fee_rate: number;
+  fee_rate?: number;
   total_revenue: number;
-  filled_order_count: number;
-  orders: FeeOrder[];
+  filled_order_count?: number;
+  orders?: FeeOrder[];
 }

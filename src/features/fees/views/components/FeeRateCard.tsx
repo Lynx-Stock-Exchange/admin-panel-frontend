@@ -4,19 +4,17 @@ import type { FeeConfig } from "../../types";
 
 interface Props {
   config: FeeConfig | null;
-  currentRate: number | null;
   loading: boolean;
   updateLoading: boolean;
   onUpdate: (rate: number) => Promise<boolean>;
 }
 
-export default function FeeRateCard({ config, currentRate, loading, updateLoading, onUpdate }: Props) {
+export default function FeeRateCard({ config, loading, updateLoading, onUpdate }: Props) {
   const [input, setInput] = useState("");
 
   useEffect(() => {
-    const rate = currentRate ?? config?.fee_rate;
-    if (rate != null) setInput(String(rate));
-  }, [currentRate, config]);
+    if (config?.rate != null) setInput(String(config.rate));
+  }, [config]);
 
   async function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -25,7 +23,7 @@ export default function FeeRateCard({ config, currentRate, loading, updateLoadin
     await onUpdate(rate);
   }
 
-  const displayRate = currentRate ?? config?.fee_rate ?? null;
+  const displayRate = config?.rate ?? null;
 
   return (
     <div className="rounded-lg border border-zinc-200 bg-white p-5">

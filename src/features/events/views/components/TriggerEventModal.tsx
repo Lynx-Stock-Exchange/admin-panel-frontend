@@ -1,14 +1,11 @@
 import { useState } from "react";
-import { X } from "lucide-react";
-import type { EventDefinition, CreateEventDefinitionPayload, EventType, EventScope } from "../../types";
+import { X, Zap } from "lucide-react";
+import type { EventTriggerRequest, EventType, EventScope } from "../../types";
 import { EVENT_TYPE_LABELS, EVENT_TYPES, SCOPE_LABELS, EVENT_SCOPES } from "../../utils/format";
 
 interface Props {
-  mode: "add" | "edit";
-  definition?: EventDefinition;
   onClose: () => void;
-  onCreate: (payload: CreateEventDefinitionPayload) => Promise<void>;
-  onUpdate: (eventId: string, payload: Partial<CreateEventDefinitionPayload>) => Promise<void>;
+  onTrigger: (payload: EventTriggerRequest) => Promise<void>;
 }
 
 type FormData = {
@@ -20,22 +17,18 @@ type FormData = {
   headline: string;
 };
 
-function initForm(def?: EventDefinition): FormData {
-  return {
-    event_type: def?.event_type ?? "BULL_RUN",
-    scope: def?.scope ?? "MARKET",
-    target: def?.target ?? "",
-    magnitude: def ? String(def.magnitude) : "1.5",
-    duration_ticks: def ? String(def.duration_ticks) : "20",
-    headline: def?.headline ?? "",
-  };
-}
-
 const inputCls =
   "w-full rounded-md border border-zinc-200 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900";
 
-export default function EventModal({ mode, definition, onClose, onCreate, onUpdate }: Props) {
-  const [form, setForm] = useState<FormData>(() => initForm(definition));
+export default function TriggerEventModal({ onClose, onTrigger }: Props) {
+  const [form, setForm] = useState<FormData>({
+    event_type: "BULL_RUN",
+    scope: "MARKET",
+    target: "",
+    magnitude: "1.5",
+    duration_ticks: "20",
+    headline: "",
+  });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,23 +44,17 @@ export default function EventModal({ mode, definition, onClose, onCreate, onUpda
     e.preventDefault();
     setError(null);
     setSubmitting(true);
-    const payload: CreateEventDefinitionPayload = {
-      event_type: form.event_type,
-      scope: form.scope,
-      target: form.scope === "MARKET" ? null : form.target.trim() || null,
-      magnitude: parseFloat(form.magnitude),
-      duration_ticks: parseInt(form.duration_ticks, 10),
-      headline: form.headline.trim(),
-    };
     try {
-      if (mode === "add") {
-        await onCreate(payload);
-      } else {
-        await onUpdate(definition!.event_id, payload);
-      }
+      await onTrigger({
+        event_type: form.event_type,
+        scope: form.scope,
+        target: form.scope === "MARKET" ? null : form.target.trim() || null,
+        magnitude: parseFloat(form.magnitude),
+        duration_ticks: parseInt(form.duration_ticks, 10),
+        headline: form.headline.trim(),
+      });
     } catch {
       setError("Something went wrong. Please try again.");
-    } finally {
       setSubmitting(false);
     }
   }
@@ -76,9 +63,7 @@ export default function EventModal({ mode, definition, onClose, onCreate, onUpda
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-lg border border-zinc-200 shadow-lg w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100">
-          <h3 className="text-sm font-semibold text-zinc-900">
-            {mode === "add" ? "New Event Definition" : "Edit Event Definition"}
-          </h3>
+          <h3 className="text-sm font-semibold text-zinc-900">Trigger Event</h3>
           <button onClick={onClose} className="text-zinc-400 hover:text-zinc-700 cursor-pointer">
             <X size={16} />
           </button>
@@ -112,10 +97,7 @@ export default function EventModal({ mode, definition, onClose, onCreate, onUpda
           </div>
 
           {form.scope !== "MARKET" && (
-            <Field
-              label={form.scope === "SECTOR" ? "Sector Name" : "Ticker"}
-              required
-            >
+            <Field label={form.scope === "SECTOR" ? "Sector Name" : "Ticker"} required>
               <input
                 type="text"
                 required
@@ -166,6 +148,10 @@ export default function EventModal({ mode, definition, onClose, onCreate, onUpda
             />
           </Field>
 
+          <div className="rounded-md border border-amber-100 bg-amber-50 px-3 py-2 text-xs text-amber-700">
+            This event will be broadcast immediately to all WebSocket subscribers.
+          </div>
+
           {error && <p className="text-sm text-red-600">{error}</p>}
 
           <div className="flex justify-end gap-2 pt-1">
@@ -180,9 +166,10 @@ export default function EventModal({ mode, definition, onClose, onCreate, onUpda
             <button
               type="submit"
               disabled={submitting}
-              className="px-4 py-2 text-sm font-medium rounded-md bg-zinc-900 text-white hover:bg-zinc-700 transition-colors cursor-pointer disabled:opacity-40"
+              className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md bg-zinc-900 text-white hover:bg-zinc-700 transition-colors cursor-pointer disabled:opacity-40"
             >
-              {submitting ? "Saving…" : mode === "add" ? "Create" : "Save Changes"}
+              <Zap size={13} />
+              {submitting ? "Triggering…" : "Trigger"}
             </button>
           </div>
         </form>

@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { X } from "lucide-react";
-import type { Stock, CreateStockPayload, UpdateStockPayload } from "../../types";
+import type { CreateStockPayload } from "../../types";
 
 interface Props {
-  mode: "add" | "edit";
-  stock?: Stock;
+  mode: "add";
   onClose: () => void;
   onCreate: (payload: CreateStockPayload) => Promise<void>;
-  onUpdate: (ticker: string, payload: UpdateStockPayload) => Promise<void>;
 }
 
 type FormData = {
@@ -21,21 +19,21 @@ type FormData = {
   momentum: string;
 };
 
-function initForm(stock?: Stock): FormData {
+function initForm(): FormData {
   return {
-    ticker: stock?.ticker ?? "",
-    name: stock?.name ?? "",
-    sector: stock?.sector ?? "",
+    ticker: "",
+    name: "",
+    sector: "",
     start_price: "",
-    volatility: stock ? String(stock.volatility) : "",
-    trend_bias: stock ? String(stock.trend_bias) : "",
-    event_weight: stock ? String(stock.event_weight) : "",
-    momentum: stock ? String(stock.momentum) : "",
+    volatility: "",
+    trend_bias: "",
+    event_weight: "",
+    momentum: "",
   };
 }
 
-export default function StockModal({ mode, stock, onClose, onCreate, onUpdate }: Props) {
-  const [form, setForm] = useState<FormData>(() => initForm(stock));
+export default function StockModal({ onClose, onCreate }: Props) {
+  const [form, setForm] = useState<FormData>(initForm);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,27 +46,16 @@ export default function StockModal({ mode, stock, onClose, onCreate, onUpdate }:
     setError(null);
     setSubmitting(true);
     try {
-      if (mode === "add") {
-        await onCreate({
-          ticker: form.ticker.trim().toUpperCase(),
-          name: form.name.trim(),
-          sector: form.sector.trim(),
-          start_price: parseFloat(form.start_price),
-          volatility: parseFloat(form.volatility),
-          trend_bias: parseFloat(form.trend_bias),
-          event_weight: parseFloat(form.event_weight),
-          momentum: parseFloat(form.momentum),
-        });
-      } else {
-        await onUpdate(stock!.ticker, {
-          name: form.name.trim(),
-          sector: form.sector.trim(),
-          volatility: parseFloat(form.volatility),
-          trend_bias: parseFloat(form.trend_bias),
-          event_weight: parseFloat(form.event_weight),
-          momentum: parseFloat(form.momentum),
-        });
-      }
+      await onCreate({
+        ticker: form.ticker.trim().toUpperCase(),
+        name: form.name.trim(),
+        sector: form.sector.trim(),
+        start_price: parseFloat(form.start_price),
+        volatility: parseFloat(form.volatility),
+        trend_bias: parseFloat(form.trend_bias),
+        event_weight: parseFloat(form.event_weight),
+        momentum: parseFloat(form.momentum),
+      });
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
@@ -80,28 +67,24 @@ export default function StockModal({ mode, stock, onClose, onCreate, onUpdate }:
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-lg border border-zinc-200 shadow-lg w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100">
-          <h3 className="text-sm font-semibold text-zinc-900">
-            {mode === "add" ? "Add Stock" : `Edit ${stock?.ticker}`}
-          </h3>
+          <h3 className="text-sm font-semibold text-zinc-900">Add Stock</h3>
           <button onClick={onClose} className="text-zinc-400 hover:text-zinc-700 cursor-pointer">
             <X size={16} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
-          {mode === "add" && (
-            <Field label="Ticker" required>
-              <input
-                type="text"
-                required
-                maxLength={5}
-                placeholder="e.g. ARKA"
-                value={form.ticker}
-                onChange={(e) => set("ticker", e.target.value)}
-                className={inputCls}
-              />
-            </Field>
-          )}
+          <Field label="Ticker" required>
+            <input
+              type="text"
+              required
+              maxLength={5}
+              placeholder="e.g. ARKA"
+              value={form.ticker}
+              onChange={(e) => set("ticker", e.target.value)}
+              className={inputCls}
+            />
+          </Field>
 
           <div className="grid grid-cols-2 gap-4">
             <Field label="Name" required className="col-span-2">
@@ -126,20 +109,18 @@ export default function StockModal({ mode, stock, onClose, onCreate, onUpdate }:
               />
             </Field>
 
-            {mode === "add" && (
-              <Field label="Start Price" required>
-                <input
-                  type="number"
-                  required
-                  min={0.01}
-                  step={0.01}
-                  placeholder="120.00"
-                  value={form.start_price}
-                  onChange={(e) => set("start_price", e.target.value)}
-                  className={inputCls}
-                />
-              </Field>
-            )}
+            <Field label="Start Price" required>
+              <input
+                type="number"
+                required
+                min={0.01}
+                step={0.01}
+                placeholder="120.00"
+                value={form.start_price}
+                onChange={(e) => set("start_price", e.target.value)}
+                className={inputCls}
+              />
+            </Field>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -215,7 +196,7 @@ export default function StockModal({ mode, stock, onClose, onCreate, onUpdate }:
               disabled={submitting}
               className="px-4 py-2 text-sm font-medium rounded-md bg-zinc-900 text-white hover:bg-zinc-700 transition-colors cursor-pointer disabled:opacity-40"
             >
-              {submitting ? "Saving…" : mode === "add" ? "Add Stock" : "Save Changes"}
+              {submitting ? "Saving…" : "Add Stock"}
             </button>
           </div>
         </form>
