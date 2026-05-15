@@ -1,29 +1,17 @@
 import { useState } from "react";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useStocks } from "../../hooks/useStocks";
-import type { Stock, CreateStockPayload, UpdateStockPayload } from "../../types";
+import type { CreateStockPayload, UpdateStockPayload } from "../../types";
 import { formatPrice, formatPercent } from "../../utils/format";
 import StockModal from "./StockModal";
-import DeleteConfirmModal from "./DeleteConfirmModal";
 
 type ModalState =
   | { open: false }
-  | { open: true; mode: "add" }
-  | { open: true; mode: "edit"; stock: Stock };
+  | { open: true; mode: "add" };
 
 export default function StocksTab() {
-  const { stocks, loading, error, createStock, updateStock, deleteStock } = useStocks();
+  const { stocks, loading, error, createStock, updateStock } = useStocks();
   const [modal, setModal] = useState<ModalState>({ open: false });
-  const [deleteTarget, setDeleteTarget] = useState<Stock | null>(null);
-  const [deleteLoading, setDeleteLoading] = useState(false);
-
-  async function handleDelete() {
-    if (!deleteTarget) return;
-    setDeleteLoading(true);
-    await deleteStock(deleteTarget.ticker);
-    setDeleteLoading(false);
-    setDeleteTarget(null);
-  }
 
   return (
     <>
@@ -55,7 +43,6 @@ export default function StocksTab() {
               <Th>Volatility</Th>
               <Th>Trend Bias</Th>
               <Th>Momentum</Th>
-              <th className="px-4 py-3 w-20" />
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-100">
@@ -88,24 +75,6 @@ export default function StocksTab() {
                   {stock.trend_bias > 0 ? `+${stock.trend_bias}` : stock.trend_bias}
                 </td>
                 <td className="px-4 py-3 text-zinc-500">{stock.momentum}</td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-1 justify-end">
-                    <button
-                      onClick={() => setModal({ open: true, mode: "edit", stock })}
-                      className="p-1.5 rounded text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors cursor-pointer"
-                      title="Edit"
-                    >
-                      <Pencil size={13} />
-                    </button>
-                    <button
-                      onClick={() => setDeleteTarget(stock)}
-                      className="p-1.5 rounded text-zinc-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-                      title="Delete"
-                    >
-                      <Trash2 size={13} />
-                    </button>
-                  </div>
-                </td>
               </tr>
             ))}
           </tbody>
@@ -114,8 +83,7 @@ export default function StocksTab() {
 
       {modal.open && (
         <StockModal
-          mode={modal.mode}
-          stock={modal.mode === "edit" ? modal.stock : undefined}
+          mode="add"
           onClose={() => setModal({ open: false })}
           onCreate={async (payload: CreateStockPayload) => {
             const ok = await createStock(payload);
@@ -125,15 +93,6 @@ export default function StocksTab() {
             const ok = await updateStock(ticker, payload);
             if (ok) setModal({ open: false });
           }}
-        />
-      )}
-
-      {deleteTarget && (
-        <DeleteConfirmModal
-          label={`stock "${deleteTarget.ticker} — ${deleteTarget.name}"`}
-          loading={deleteLoading}
-          onConfirm={handleDelete}
-          onCancel={() => setDeleteTarget(null)}
         />
       )}
     </>

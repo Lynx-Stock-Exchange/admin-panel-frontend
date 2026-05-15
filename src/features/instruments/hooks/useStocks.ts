@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { StockManager } from "../services/StockManager";
 import type { Stock, CreateStockPayload, UpdateStockPayload } from "../types";
+import { websocketService, type PriceUpdatePayload } from "../../../shared/services/websocketService";
 
 export function useStocks() {
   const [stocks, setStocks] = useState<Stock[]>([]);
@@ -11,7 +12,13 @@ export function useStocks() {
     setLoading(true);
     setError(null);
     try {
-      setStocks(await StockManager.list());
+      const data = await StockManager.list();
+      setStocks(data);
+      
+      // Subscribe to price updates for all tickers
+      if (data.length > 0) {
+        websocketService.subscribe("PRICE_FEED", data.map(s => s.ticker));
+      }
     } catch {
       setError("Failed to load stocks.");
     } finally {
@@ -19,12 +26,29 @@ export function useStocks() {
     }
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+    
+    // Listen for price updates
+    const cleanup = websocketService.on<PriceUpdatePayload>("PRICE_UPDATE", (payload) => {
+      setStocks((prev) => 
+        prev.map((s) => 
+          s.ticker === payload.ticker 
+            ? { ...s, current_price: payload.price, volume: payload.volume } 
+            : s
+        )
+      );
+    });
+
+    return cleanup;
+  }, []);
 
   async function createStock(payload: CreateStockPayload): Promise<boolean> {
     try {
       const stock = await StockManager.create(payload);
       setStocks((prev) => [...prev, stock]);
+      // Subscribe to the new stock
+      websocketService.subscribe("PRICE_FEED", [stock.ticker]);
       return true;
     } catch {
       setError("Failed to create stock.");
