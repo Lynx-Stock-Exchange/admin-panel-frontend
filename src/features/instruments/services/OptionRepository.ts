@@ -1,5 +1,9 @@
 import { apiClient } from "../../../shared/services/apiClient";
-import type { OptionContract, CreateOptionPayload, UpdateOptionPayload } from "../types";
+import type {
+  OptionContract,
+  CreateOptionPayload,
+  UpdateOptionPayload,
+} from "../types";
 
 export const OptionRepository = {
   async list(): Promise<OptionContract[]> {
@@ -12,8 +16,14 @@ export const OptionRepository = {
     return data.option ?? data;
   },
 
-  async update(optionId: string, payload: UpdateOptionPayload): Promise<OptionContract> {
-    const { data } = await apiClient.put(`/api/admin/options/${optionId}`, payload);
+  async update(
+    optionId: string,
+    payload: UpdateOptionPayload,
+  ): Promise<OptionContract> {
+    const { data } = await apiClient.put(
+      `/api/admin/options/${optionId}`,
+      payload,
+    );
     return data.option ?? data;
   },
 

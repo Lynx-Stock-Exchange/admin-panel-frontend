@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Copy, Check, X, ShieldOff, Plus, AlertTriangle } from "lucide-react";
-import { PlatformManager } from "../services/PlatformManager";
-import type { Platform, CreatedPlatformResult } from "../types";
+import { usePlatforms } from "../hooks/usePlatforms";
+import type { CreatedPlatformResult } from "../types";
 
 function CopyButton({ value }: { value: string }) {
   const [copied, setCopied] = useState(false);
@@ -104,7 +104,7 @@ function RegisterModal({
   onCreated,
 }: {
   onClose: () => void;
-  onCreated: (result: CreatedPlatformResult) => void;
+  onCreated: (payload: { name: string; description?: string }) => Promise<void>;
 }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -116,11 +116,10 @@ function RegisterModal({
     setError(null);
     setIsSubmitting(true);
     try {
-      const result = await PlatformManager.create({
+      await onCreated({
         name,
         description: description || undefined,
       });
-      onCreated(result);
     } catch {
       setError("Failed to register platform. Please try again.");
     } finally {
@@ -196,45 +195,27 @@ function RegisterModal({
 }
 
 export default function PlatformManagement() {
-  const [platforms, setPlatforms] = useState<Platform[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { platforms, isLoading, revokingId, createPlatform, revokePlatform } =
+    usePlatforms();
   const [showRegister, setShowRegister] = useState(false);
   const [credentials, setCredentials] = useState<CreatedPlatformResult | null>(null);
-  const [revokingId, setRevokingId] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadPlatforms();
-  }, []);
-
-  async function loadPlatforms() {
-    setIsLoading(true);
-    try {
-      const data = await PlatformManager.list();
-      setPlatforms(data);
-    } finally {
-      setIsLoading(false);
-    }
-  }
 
   async function handleRevoke(platformId: string) {
     if (!confirm("Revoke access for this platform? This cannot be undone.")) return;
-    setRevokingId(platformId);
     try {
-      const updated = await PlatformManager.revoke(platformId);
-      setPlatforms((prev) =>
-        prev.map((p) => (p.id === updated.id ? updated : p))
-      );
+      await revokePlatform(platformId);
     } catch {
       alert("Failed to revoke platform access.");
-    } finally {
-      setRevokingId(null);
     }
   }
 
-  function handleCreated(result: CreatedPlatformResult) {
+  async function handleCreated(payload: {
+    name: string;
+    description?: string;
+  }) {
+    const result = await createPlatform(payload);
     setShowRegister(false);
     setCredentials(result);
-    setPlatforms((prev) => [result.platform, ...prev]);
   }
 
   return (

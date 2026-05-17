@@ -1,25 +1,38 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { EventManager } from "../services/EventManager";
-import type { TriggeredEvent } from "../types";
+import type { TriggeredEvent, EventTriggerRequest } from "../types";
 
 export function useEventHistory() {
   const [history, setHistory] = useState<TriggeredEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
+  async function load() {
     setLoading(true);
     setError(null);
     try {
       setHistory(await EventManager.listHistory());
     } catch {
-      setError("Failed to load event history.");
+      setHistory([]);
     } finally {
       setLoading(false);
     }
+  }
+
+  useEffect(() => {
+    load();
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  async function triggerEvent(payload: EventTriggerRequest): Promise<boolean> {
+    try {
+      await EventManager.trigger(payload);
+      await load();
+      return true;
+    } catch {
+      setError("Failed to trigger event.");
+      return false;
+    }
+  }
 
-  return { history, loading, error, reload: load };
+  return { history, loading, error, triggerEvent };
 }

@@ -16,9 +16,11 @@ export default function StocksTab() {
   return (
     <>
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-zinc-500">Listed stocks and simulation parameters.</p>
+        <p className="text-sm text-zinc-500">
+          Listed stocks and simulation parameters.
+        </p>
         <button
-          onClick={() => setModal({ open: true, mode: "add" })}
+          onClick={() => setModalOpen(true)}
           className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md bg-zinc-900 text-white hover:bg-zinc-700 transition-colors cursor-pointer"
         >
           <Plus size={14} />
@@ -48,14 +50,20 @@ export default function StocksTab() {
           <tbody className="divide-y divide-zinc-100">
             {loading && (
               <tr>
-                <td colSpan={8} className="px-4 py-10 text-center text-sm text-zinc-400">
+                <td
+                  colSpan={7}
+                  className="px-4 py-10 text-center text-sm text-zinc-400"
+                >
                   Loading…
                 </td>
               </tr>
             )}
             {!loading && stocks.length === 0 && (
               <tr>
-                <td colSpan={8} className="px-4 py-10 text-center text-sm text-zinc-400">
+                <td
+                  colSpan={7}
+                  className="px-4 py-10 text-center text-sm text-zinc-400"
+                >
                   No stocks listed yet.
                 </td>
               </tr>
@@ -81,17 +89,13 @@ export default function StocksTab() {
         </table>
       </div>
 
-      {modal.open && (
+      {modalOpen && (
         <StockModal
           mode="add"
           onClose={() => setModal({ open: false })}
           onCreate={async (payload: CreateStockPayload) => {
             const ok = await createStock(payload);
-            if (ok) setModal({ open: false });
-          }}
-          onUpdate={async (ticker: string, payload: UpdateStockPayload) => {
-            const ok = await updateStock(ticker, payload);
-            if (ok) setModal({ open: false });
+            if (ok) setModalOpen(false);
           }}
         />
       )}

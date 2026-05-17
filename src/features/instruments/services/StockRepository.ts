@@ -13,7 +13,10 @@ export const StockRepository = {
   },
 
   async update(ticker: string, payload: UpdateStockPayload): Promise<Stock> {
-    const { data } = await apiClient.put(`/api/admin/stocks/${ticker}`, payload);
+    const { data } = await apiClient.put(
+      `/api/admin/stocks/${ticker}`,
+      payload,
+    );
     return data.stock ?? data;
   },
 

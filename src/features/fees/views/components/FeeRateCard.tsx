@@ -4,19 +4,22 @@ import type { FeeConfig } from "../../types";
 
 interface Props {
   config: FeeConfig | null;
-  currentRate: number | null;
   loading: boolean;
   updateLoading: boolean;
   onUpdate: (rate: number) => Promise<boolean>;
 }
 
-export default function FeeRateCard({ config, currentRate, loading, updateLoading, onUpdate }: Props) {
+export default function FeeRateCard({
+  config,
+  loading,
+  updateLoading,
+  onUpdate,
+}: Props) {
   const [input, setInput] = useState("");
 
   useEffect(() => {
-    const rate = config?.fee_rate ?? currentRate;
-    if (rate != null) setInput(String(rate));
-  }, [currentRate, config]);
+    if (config?.rate != null) setInput(String(config.rate));
+  }, [config]);
 
   async function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -25,16 +28,20 @@ export default function FeeRateCard({ config, currentRate, loading, updateLoadin
     await onUpdate(rate);
   }
 
-  const displayRate = currentRate ?? config?.fee_rate ?? null;
+  const displayRate = config?.rate ?? null;
 
   return (
     <div className="rounded-lg border border-zinc-200 bg-white p-5">
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h2 className="text-sm font-medium text-zinc-900 mb-1">Exchange Fee Rate</h2>
+          <h2 className="text-sm font-medium text-zinc-900 mb-1">
+            Exchange Fee Rate
+          </h2>
           <p className="text-xs text-zinc-400">
             Applied to every executed trade:{" "}
-            <span className="font-mono">execution_price × quantity × fee_rate</span>
+            <span className="font-mono">
+              execution_price × quantity × fee_rate
+            </span>
           </p>
         </div>
         <div className="text-right">

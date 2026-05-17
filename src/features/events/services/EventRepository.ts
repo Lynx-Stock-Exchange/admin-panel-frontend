@@ -8,7 +8,8 @@ import type {
 export const EventRepository = {
   async list(): Promise<EventDefinition[]> {
     const { data } = await apiClient.get("/api/admin/events");
-    return data.events ?? data;
+    const events = data.events ?? data;
+    return Array.isArray(events) ? events : [];
   },
 
   async trigger(payload: EventTriggerRequest): Promise<void> {
@@ -17,6 +18,7 @@ export const EventRepository = {
 
   async listHistory(): Promise<TriggeredEvent[]> {
     const { data } = await apiClient.get("/api/admin/events/history");
-    return data.events ?? data;
+    const events = data.events ?? data;
+    return Array.isArray(events) ? events : [];
   },
 };
